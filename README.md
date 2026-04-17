@@ -2,7 +2,7 @@
 
 React Native mobile client for the Pulse AI support chatbot. Runs on iOS, Android, and Web via Expo.
 
-Connects to the [ai-chatbot backend](https://github.com/YOUR_USERNAME/ai-chatbot) for real-time chat and analytics.
+Connects to the [ai-chatbot backend](https://github.com/serifenuruysal/ai-chatbot) for real-time chat and analytics.
 
 ---
 
@@ -126,7 +126,7 @@ pulse-ai/
 
 This app requires the Pulse AI backend to be running for Live mode chat and analytics.
 
-Backend repo: [ai-chatbot](https://github.com/YOUR_USERNAME/ai-chatbot)
+Backend repo: [ai-chatbot](https://github.com/serifenuruysal/ai-chatbot)
 
 ```bash
 # Run backend locally
