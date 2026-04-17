@@ -6,7 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from './src/services/storage';
 
 import { ChatScreen }          from './src/screens/ChatScreen';
 import { ConversationsScreen } from './src/screens/ConversationsScreen';
@@ -68,10 +68,10 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      let id = await AsyncStorage.getItem('user-slot-1');
+      let id = await storage.getItem('user-slot-1');
       if (!id) {
         id = 'demo-user-' + Math.random().toString(36).slice(2, 10);
-        await AsyncStorage.setItem('user-slot-1', id);
+        await storage.setItem('user-slot-1', id);
       }
       setUserId(id);
     })();

@@ -4,7 +4,7 @@ import {
   Switch, ScrollView, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '../services/storage';
 import { colors, radius, spacing } from '../theme';
 
 const MAX_USERS = 5;
@@ -34,7 +34,7 @@ export function SettingsScreen({
       const loaded = await Promise.all(
         Array.from({ length: MAX_USERS }, async (_, i) => {
           const key = `user-slot-${i + 1}`;
-          const id  = await AsyncStorage.getItem(key) ?? '';
+          const id  = await storage.getItem(key) ?? '';
           return { label: `User ${i + 1}`, id };
         })
       );
@@ -48,7 +48,7 @@ export function SettingsScreen({
       {
         text: 'Clear', style: 'destructive',
         onPress: async () => {
-          await AsyncStorage.clear();
+          await storage.clear();
           Alert.alert('Done', 'Restart the app to complete reset.');
         },
       },
