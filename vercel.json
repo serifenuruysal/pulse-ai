@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm install react-dom@19.1.0 react-native-web@0.21.0 @expo/metro-runtime && npx expo export --platform web",
+  "buildCommand": "npx expo export --platform web",
   "outputDirectory": "dist",
   "installCommand": "npm install"
 }
