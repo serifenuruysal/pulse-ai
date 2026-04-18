@@ -14,7 +14,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pulseai.app"
+      "bundleIdentifier": "com.pulseai.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -33,6 +36,7 @@
       "eas": {
         "projectId": "2717ff18-da2f-4f87-8033-9b6ebbcb78a2"
       }
-    }
+    },
+    "owner": "serifenuruysal"
   }
 }
