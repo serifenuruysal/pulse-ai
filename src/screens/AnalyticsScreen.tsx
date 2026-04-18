@@ -200,7 +200,7 @@ export function AnalyticsScreen() {
     : colors.textSecondary;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bgPrimary }} edges={['bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bgPrimary }} edges={['top', 'bottom']}>
 
       {/* Mode + days toggles */}
       <View style={styles.controls}>
@@ -299,7 +299,7 @@ export function AnalyticsScreen() {
                   const sentimentColors: Record<string, string> = { positive: '#22c55e', neutral: '#94a3b8', negative: '#ef4444' };
                   const c = sentimentColors[s.sentiment] ?? colors.primary;
                   return (
-                    <View key={s.sentiment} style={{ marginBottom: spacing.sm }}>
+                    <View key={`${s.sentiment}-${i}`} style={{ marginBottom: spacing.sm }}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
                         <Text style={{ fontSize: 13, color: colors.textPrimary, textTransform: 'capitalize' }}>{s.sentiment}</Text>
                         <Text style={{ fontSize: 12, color: colors.textSecondary }}>{s.count} ({pct}%)</Text>
@@ -376,7 +376,7 @@ export function AnalyticsScreen() {
 }
 
 const styles = StyleSheet.create({
-  controls:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.md, borderBottomWidth: 0.5, borderColor: colors.border },
+  controls:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderBottomWidth: 0.5, borderColor: colors.border },
   modeToggle:    { flexDirection: 'row', backgroundColor: colors.bgSecondary, borderRadius: radius.md, padding: 2, gap: 2 },
   modeBtn:       { paddingHorizontal: 14, paddingVertical: 6, borderRadius: radius.sm },
   modeBtnDemo:   { backgroundColor: colors.warning },
