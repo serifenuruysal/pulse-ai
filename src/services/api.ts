@@ -17,10 +17,10 @@ async function request<T>(path: string, opts?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  sendMessage: (userId: string, content: string, conversationId?: string) =>
+  sendMessage: (userId: string, content: string, conversationId?: string, forceNew?: boolean) =>
     request<{ conversationId: string; content: string; provider: string; latency: number }>('/chat/message', {
       method: 'POST',
-      body: JSON.stringify(conversationId ? { userId, content, conversationId } : { userId, content }),
+      body: JSON.stringify(conversationId && !forceNew ? { userId, content, conversationId } : { userId, content, forceNew: true }),
     }),
 
   getConversations: (userId: string) =>

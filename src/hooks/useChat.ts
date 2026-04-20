@@ -5,6 +5,7 @@ import type { Message, Conversation } from '../types';
 export function useChat(userId: string) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConvId,  setActiveConvId]  = useState<string | null>(null);
+  const forceNewConv = useRef(false);
   const [messages,      setMessages]      = useState<Message[]>([]);
   const [isTyping,      setIsTyping]      = useState(false);
   const [isLoading,     setIsLoading]     = useState(false);
@@ -46,7 +47,8 @@ export function useChat(userId: string) {
     setIsTyping(true);
 
     try {
-      const result = await api.sendMessage(userId, content, activeConvId ?? undefined);
+      const result = await api.sendMessage(userId, content, forceNewConv.current ? undefined : (activeConvId ?? undefined), forceNewConv.current);
+      forceNewConv.current = false;
       if (!activeConvId) {
         setActiveConvId(result.conversationId);
         await loadConversations();
@@ -71,6 +73,7 @@ export function useChat(userId: string) {
   const newConversation = useCallback(() => {
     setActiveConvId(null);
     setMessages([]);
+    forceNewConv.current = true;
   }, []);
 
   return {
