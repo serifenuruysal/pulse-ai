@@ -1,9 +1,8 @@
 import type { AnalyticsOverview, Conversation, Message } from '../types';
 
-// ── Change this to your backend URL when testing on a real device ──────────────
-// Local dev:   http://localhost:4000   (works on simulator / web)
-// Real device: http://YOUR_MAC_IP:4000 (e.g. http://192.168.1.42:4000)
-export const BASE_URL = 'https://ai-chat-support-insights-production.up.railway.app';
+const DEV_URL = 'http://192.168.0.198:4000';
+const PROD_URL = 'https://ai-chat-support-insights-production.up.railway.app';
+export const BASE_URL = __DEV__ ? DEV_URL : PROD_URL;
 
 async function request<T>(path: string, opts?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}/api${path}`, {

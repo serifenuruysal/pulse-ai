@@ -161,6 +161,7 @@ export function ChatScreen({ userId }: { userId: string }) {
             multiline
             maxLength={4000}
             returnKeyType="send"
+            blurOnSubmit
             onSubmitEditing={handleSend}
             editable={!isLoading}
           />
