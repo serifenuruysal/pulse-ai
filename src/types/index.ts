@@ -36,6 +36,7 @@ export interface AnalyticsOverview {
   total: number;
   complaints: number;
   feature_requests: number;
+  escalations: number;
   avg_sentiment: number;
   avg_latency_ms: number;
   active_users: number;
@@ -53,4 +54,5 @@ export interface AnalyticsOverview {
     analyzed_at: string;
   }[];
   peak_hours: { hour: number; count: number }[];
+  language_breakdown: { language: string; count: number }[];
 }

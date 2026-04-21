@@ -19,8 +19,14 @@ function daysAgo(n: number) {
   return d.toISOString().split('T')[0];
 }
 
+const LANG_LABELS: Record<string, string> = {
+  en: '🇬🇧 English', es: '🇪🇸 Spanish', fr: '🇫🇷 French', de: '🇩🇪 German',
+  pt: '🇧🇷 Portuguese', ru: '🇷🇺 Russian', ar: '🇸🇦 Arabic', zh: '🇨🇳 Chinese',
+  ja: '🇯🇵 Japanese', ko: '🇰🇷 Korean',
+};
+
 const MOCK: AnalyticsOverview = {
-  total: 284, complaints: 38, feature_requests: 52,
+  total: 284, complaints: 38, feature_requests: 52, escalations: 12,
   avg_sentiment: -0.12, avg_latency_ms: 820, active_users: 20, returning_users: 8,
   sentiment_breakdown: [
     { sentiment: 'positive', count: 74 },
@@ -55,6 +61,13 @@ const MOCK: AnalyticsOverview = {
     hour: h,
     count: h >= 9 && h <= 18 ? 6 + Math.floor(Math.sin((h - 9) * 0.5) * 4) : Math.floor(Math.random() * 2),
   })),
+  language_breakdown: [
+    { language: 'en', count: 162 },
+    { language: 'es', count: 54 },
+    { language: 'fr', count: 28 },
+    { language: 'pt', count: 22 },
+    { language: 'de', count: 18 },
+  ],
 };
 
 // ─── Simple SVG line chart ─────────────────────────────────────────────────────
@@ -130,6 +143,37 @@ function HBarChart({ data, xKey, yKey, colors: barColors }: { data: any[]; xKey:
             <SvgText x={padL + barW + 4} y={y + barH / 2 + 4} fontSize={10} fill={colors.textTertiary}>
               {d[yKey]}
             </SvgText>
+          </G>
+        );
+      })}
+    </Svg>
+  );
+}
+
+// ─── Peak hours bar chart (24 vertical bars) ──────────────────────────────────
+function PeakHoursChart({ data }: { data: { hour: number; count: number }[] }) {
+  const h = 80;
+  const padB = 18, padT = 4;
+  const w = CHART_W;
+  const barW = (w / 24) - 2;
+  const maxVal = Math.max(...data.map(d => d.count), 1);
+  const innerH = h - padT - padB;
+
+  return (
+    <Svg width={w} height={h}>
+      {data.map((d, i) => {
+        const barH = Math.max(2, (d.count / maxVal) * innerH);
+        const x = i * (w / 24) + 1;
+        const y = padT + innerH - barH;
+        const isActive = d.count >= maxVal * 0.5;
+        return (
+          <G key={i}>
+            <Rect x={x} y={y} width={barW} height={barH} rx={2} fill={isActive ? colors.primary : colors.borderLight} />
+            {(i === 0 || i === 6 || i === 12 || i === 18 || i === 23) && (
+              <SvgText x={x + barW / 2} y={h - 2} fontSize={8} fill={colors.textTertiary} textAnchor="middle">
+                {i === 0 ? '12a' : i === 6 ? '6a' : i === 12 ? '12p' : i === 18 ? '6p' : '11p'}
+              </SvgText>
+            )}
           </G>
         );
       })}
@@ -264,6 +308,10 @@ export function AnalyticsScreen() {
             <StatCard label="Feature reqs" value={data.feature_requests} sub="Ideas from users" color={colors.warning} />
           </View>
           <View style={styles.cardRow}>
+            <StatCard label="Escalations" value={data.escalations ?? 0} sub="Flagged for team" color={colors.error} />
+            <StatCard label="Languages"   value={data.language_breakdown?.length ?? 1} sub="Detected" color={colors.info} />
+          </View>
+          <View style={styles.cardRow}>
             <StatCard label="Avg sentiment" value={sentimentLabel} sub={`Score: ${data.avg_sentiment.toFixed(2)}`} color={sentimentColor} />
             <StatCard label="Avg latency"   value={data.avg_latency_ms ? `${(data.avg_latency_ms / 1000).toFixed(1)}s` : '—'} sub="AI response" color={colors.info} />
           </View>
@@ -329,6 +377,40 @@ export function AnalyticsScreen() {
                           {icons[item.intent] || '•'} {item.intent.replace('_', ' ')}
                         </Text>
                         <Text style={{ fontSize: 12, color: colors.textSecondary }}>{item.count} ({pct}%)</Text>
+                      </View>
+                      <View style={{ height: 6, backgroundColor: colors.bgTertiary, borderRadius: 3 }}>
+                        <View style={{ height: 6, borderRadius: 3, width: `${pct}%` as any, backgroundColor: TOPIC_COLORS[i % TOPIC_COLORS.length] }} />
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            </>
+          )}
+
+          {/* Peak hours */}
+          {data.peak_hours && data.peak_hours.length > 0 && (
+            <>
+              <SectionTitle title="Peak activity hours" />
+              <View style={styles.chartCard}>
+                <PeakHoursChart data={data.peak_hours} />
+              </View>
+            </>
+          )}
+
+          {/* Language breakdown */}
+          {data.language_breakdown && data.language_breakdown.length > 0 && (
+            <>
+              <SectionTitle title="User languages" />
+              <View style={[styles.chartCard, { paddingVertical: spacing.md }]}>
+                {data.language_breakdown.map((l, i) => {
+                  const total = data.language_breakdown.reduce((a, b) => a + b.count, 0);
+                  const pct   = total ? Math.round((l.count / total) * 100) : 0;
+                  return (
+                    <View key={l.language} style={{ marginBottom: i < data.language_breakdown.length - 1 ? spacing.sm : 0 }}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <Text style={{ fontSize: 13, color: colors.textPrimary }}>{LANG_LABELS[l.language] ?? l.language.toUpperCase()}</Text>
+                        <Text style={{ fontSize: 12, color: colors.textSecondary }}>{l.count} ({pct}%)</Text>
                       </View>
                       <View style={{ height: 6, backgroundColor: colors.bgTertiary, borderRadius: 3 }}>
                         <View style={{ height: 6, borderRadius: 3, width: `${pct}%` as any, backgroundColor: TOPIC_COLORS[i % TOPIC_COLORS.length] }} />
