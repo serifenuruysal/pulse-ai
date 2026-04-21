@@ -2,7 +2,7 @@ import type { AnalyticsOverview, Conversation, Message } from '../types';
 
 const DEV_URL = 'http://192.168.0.198:4000';
 const PROD_URL = 'https://ai-chat-support-insights-production.up.railway.app';
-export const BASE_URL = __DEV__ ? DEV_URL : PROD_URL;
+export const BASE_URL = process.env.NODE_ENV === 'development' ? DEV_URL : PROD_URL;
 
 async function request<T>(path: string, opts?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}/api${path}`, {
