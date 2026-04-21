@@ -23,9 +23,15 @@ const QUICK_TOPICS = [
   { icon: '👁️', label: 'Attention Marketplace' },
   { icon: '🪙', label: '$Alem Token' },
   { icon: '🔐', label: 'KYC Verification' },
-  { icon: '💸', label: 'Payments & Transfers' },
-  { icon: '👛', label: 'Wallet & Web3' },
+  { icon: '📈', label: 'Trading & Payments' },
+  { icon: '👥', label: 'P2P Transfers' },
+  { icon: '🌍', label: 'Borderless Payments' },
+  { icon: '🏦', label: 'Partner Banks' },
+  { icon: '💡', label: 'Revenue Sharing' },
+  { icon: '🔗', label: 'DApp & Wallet' },
   { icon: '🌟', label: 'Founding Creator' },
+  { icon: '💬', label: 'Messenger' },
+  { icon: '❓', label: 'General Help' },
 ];
 
 export function ConversationsScreen({
