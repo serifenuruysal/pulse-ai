@@ -32,6 +32,7 @@ function MarkdownMessage({ content, isUser }: { content: string; isUser: boolean
   let listBuffer: string[] = [];
   let listOrdered = false;
   let listStart = 0;
+  let pendingOlNumber: number | null = null; // handles "1.\n**content**" split across lines
 
   const flushList = () => {
     if (!listBuffer.length) return;
@@ -40,12 +41,15 @@ function MarkdownMessage({ content, isUser }: { content: string; isUser: boolean
         {listBuffer.map((item, idx) => (
           <View key={idx} style={mdStyles.listItem}>
             <Text style={[mdStyles.bullet, textColor]}>{listOrdered ? `${listStart + idx}.` : '•'}</Text>
-            <Text style={[mdStyles.listText, textColor]}>{item}</Text>
+            <Text style={[mdStyles.listText, textColor]}>
+              {renderInline(item, [mdStyles.listText, textColor] as any, `li-${nodes.length}-${idx}`)}
+            </Text>
           </View>
         ))}
       </View>
     );
     listBuffer = [];
+    pendingOlNumber = null;
   };
 
   lines.forEach((raw, idx) => {
@@ -80,15 +84,32 @@ function MarkdownMessage({ content, isUser }: { content: string; isUser: boolean
     const ul = line.match(/^[-*•]\s+(.+)/);
     if (ul) {
       if (listBuffer.length === 0) listOrdered = false;
+      pendingOlNumber = null;
       listBuffer.push(ul[1]);
       return;
     }
 
-    // Ordered list
+    // Ordered list — "1. content" on same line
     const ol = line.match(/^(\d+)[.)]\s+(.+)/);
     if (ol) {
       if (listBuffer.length === 0) { listOrdered = true; listStart = parseInt(ol[1]); }
+      pendingOlNumber = null;
       listBuffer.push(ol[2]);
+      return;
+    }
+
+    // Ordered list — bare "1." with content on next line (OpenAI style)
+    const olBare = line.match(/^(\d+)[.)]\s*$/);
+    if (olBare) {
+      if (listBuffer.length === 0) { listOrdered = true; listStart = parseInt(olBare[1]); }
+      pendingOlNumber = parseInt(olBare[1]);
+      return;
+    }
+
+    // Content line following a bare "1." marker
+    if (pendingOlNumber !== null) {
+      listBuffer.push(line.trim());
+      pendingOlNumber = null;
       return;
     }
 
@@ -176,10 +197,10 @@ function TypingIndicator() {
 
 // ─── Suggested prompts ─────────────────────────────────────────────────────────
 const SUGGESTED = [
-  { icon: '👛', text: 'How do I set up my Solana wallet?' },
-  { icon: '💳', text: 'My payment card was declined' },
-  { icon: '💰', text: 'What is the Paid Attention Marketplace?' },
-  { icon: '🔐', text: 'I lost access to my account' },
+  { icon: '👁️', text: 'How does the Paid Attention Marketplace work?' },
+  { icon: '🪙', text: 'Tell me about the $Alem token' },
+  { icon: '🔐', text: 'How do I complete KYC verification?' },
+  { icon: '💸', text: 'How do cross-border payments work on AlemX?' },
 ];
 
 // ─── Screen ────────────────────────────────────────────────────────────────────
