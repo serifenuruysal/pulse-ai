@@ -198,11 +198,11 @@ function TypingIndicator() {
 // ─── Suggested prompts ─────────────────────────────────────────────────────────
 const SUGGESTED = [
   { icon: '👁️', text: 'How does the Paid Attention Marketplace work?' },
-  { icon: '📈', text: 'How do I trade crypto and stocks on AlemX?' },
-  { icon: '🌍', text: 'How do borderless payments work?' },
-  { icon: '🏦', text: 'How do I open a partner bank account?' },
-  { icon: '💡', text: 'How does revenue sharing work for creators?' },
-  { icon: '🔗', text: 'How do I connect my wallet or a DApp?' },
+  { icon: '🌟', text: 'What is the Founding Creator program?' },
+  { icon: '💳', text: 'How do I get my AlemX Visa card?' },
+  { icon: '🪙', text: 'Tell me about the $Alem token and listings' },
+  { icon: '🌍', text: 'How do borderless payments and city events work?' },
+  { icon: '🔗', text: 'How do I connect my Web3 wallet or a DApp?' },
 ];
 
 // ─── Screen ────────────────────────────────────────────────────────────────────

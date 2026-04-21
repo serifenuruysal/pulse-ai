@@ -21,7 +21,9 @@ function relativeTime(iso: string) {
 
 const QUICK_TOPICS = [
   { icon: '👁️', label: 'Attention Marketplace' },
+  { icon: '🌟', label: 'Founding Creator' },
   { icon: '🪙', label: '$Alem Token' },
+  { icon: '💳', label: 'Visa Card' },
   { icon: '🔐', label: 'KYC Verification' },
   { icon: '📈', label: 'Trading & Payments' },
   { icon: '👥', label: 'P2P Transfers' },
@@ -29,9 +31,7 @@ const QUICK_TOPICS = [
   { icon: '🏦', label: 'Partner Banks' },
   { icon: '💡', label: 'Revenue Sharing' },
   { icon: '🔗', label: 'DApp & Wallet' },
-  { icon: '🌟', label: 'Founding Creator' },
-  { icon: '💬', label: 'Messenger' },
-  { icon: '❓', label: 'General Help' },
+  { icon: '🗺️', label: 'City Events' },
 ];
 
 export function ConversationsScreen({
