@@ -92,10 +92,10 @@ function LineChart({ data, xKey, yKey }: { data: any[]; xKey: string; yKey: stri
   return (
     <Svg width={w} height={h}>
       {/* Y gridlines */}
-      {[0, 0.5, 1].map(f => {
+      {[0, 0.5, 1].map((f, fi) => {
         const y = padT + innerH * (1 - f);
         return (
-          <G key={f}>
+          <G key={`grid-${fi}`}>
             <Polyline points={`${padL},${y} ${w - padR},${y}`} stroke={colors.borderLight} strokeWidth={0.5} />
             <SvgText x={padL - 4} y={y + 3} fontSize={8} fill={colors.textTertiary} textAnchor="end">
               {Math.round(minY + f * (maxY - minY))}
@@ -111,7 +111,7 @@ function LineChart({ data, xKey, yKey }: { data: any[]; xKey: string; yKey: stri
       ))}
       {/* X labels */}
       {tickIdxs.map(i => (
-        <SvgText key={i} x={xScale(i)} y={h - 4} fontSize={8} fill={colors.textTertiary} textAnchor="middle">
+        <SvgText key={`tick-${i}`} x={xScale(i)} y={h - 4} fontSize={8} fill={colors.textTertiary} textAnchor="middle">
           {String(data[i][xKey]).slice(5)}
         </SvgText>
       ))}
@@ -193,14 +193,14 @@ function StatCard({ label, value, sub, color }: { label: string; value: string |
 }
 
 const statStyles = StyleSheet.create({
-  card:  { flex: 1, backgroundColor: colors.bgSecondary, borderRadius: radius.md, padding: spacing.md, minWidth: 140 },
-  label: { fontSize: 11, fontWeight: '600', color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
+  card:  { flex: 1, backgroundColor: colors.glassBg, borderRadius: radius.md, padding: spacing.md, minWidth: 140, borderWidth: 1, borderColor: colors.glassBorder },
+  label: { fontSize: 11, fontWeight: '600', color: colors.textTertiary, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 },
   value: { fontSize: 22, fontWeight: '600', color: colors.textPrimary },
   sub:   { fontSize: 11, color: colors.textTertiary, marginTop: 2 },
 });
 
 function SectionTitle({ title }: { title: string }) {
-  return <Text style={{ fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: spacing.sm, marginTop: spacing.lg }}>{title}</Text>;
+  return <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textTertiary, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: spacing.sm, marginTop: spacing.lg }}>{title}</Text>;
 }
 
 const TOPIC_COLORS = ['#6366f1', '#8b5cf6', '#06b6d4', '#f59e0b', '#10b981'];
@@ -244,7 +244,8 @@ export function AnalyticsScreen() {
     : colors.textSecondary;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bgPrimary }} edges={['top', 'bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bgPrimary }} edges={['top', 'bottom']}
+    >
 
       {/* Mode + days toggles */}
       <View style={styles.controls}>
@@ -459,20 +460,20 @@ export function AnalyticsScreen() {
 
 const styles = StyleSheet.create({
   controls:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderBottomWidth: 0.5, borderColor: colors.border },
-  modeToggle:    { flexDirection: 'row', backgroundColor: colors.bgSecondary, borderRadius: radius.md, padding: 2, gap: 2 },
+  modeToggle:    { flexDirection: 'row', backgroundColor: colors.bgTertiary, borderRadius: radius.md, padding: 2, gap: 2 },
   modeBtn:       { paddingHorizontal: 14, paddingVertical: 6, borderRadius: radius.sm },
   modeBtnDemo:   { backgroundColor: colors.warning },
   modeBtnLive:   { backgroundColor: colors.success },
-  modeBtnText:   { fontSize: 12, fontWeight: '600', color: colors.textSecondary },
+  modeBtnText:   { fontSize: 12, fontWeight: '600', color: colors.textTertiary },
   daysToggle:    { flexDirection: 'row', gap: 4 },
   dayBtn:        { paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.sm, borderWidth: 0.5, borderColor: colors.border },
   dayBtnActive:  { borderColor: colors.primary, backgroundColor: colors.primaryDim },
   dayBtnText:    { fontSize: 12, color: colors.textSecondary },
-  scroll:        { padding: spacing.md },
+  scroll:        { padding: spacing.md, paddingBottom: 80 },
   cardRow:       { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm },
-  chartCard:     { backgroundColor: colors.bgSecondary, borderRadius: radius.md, padding: spacing.sm, marginBottom: spacing.sm },
-  intentCard:    { backgroundColor: colors.bgSecondary, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.sm },
-  complaintCard: { backgroundColor: colors.bgSecondary, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.sm },
+  chartCard:     { backgroundColor: colors.glassBg, borderRadius: radius.md, padding: spacing.sm, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.glassBorder },
+  intentCard:    { backgroundColor: colors.glassBg, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.glassBorder },
+  complaintCard: { backgroundColor: colors.glassBg, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.glassBorder },
   complaintContent: { fontSize: 13, color: colors.textPrimary, lineHeight: 18 },
   badge:         { paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.full },
   badgeText:     { fontSize: 11, fontWeight: '500' },

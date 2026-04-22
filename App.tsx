@@ -2,65 +2,84 @@ import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
-import { Text } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, Platform } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BlurView } from 'expo-blur';
 import { storage } from './src/services/storage';
 
-import { ChatScreen }          from './src/screens/ChatScreen';
-import { ConversationsScreen } from './src/screens/ConversationsScreen';
-import { AnalyticsScreen }     from './src/screens/AnalyticsScreen';
-import { SettingsScreen }      from './src/screens/SettingsScreen';
-import { colors }              from './src/theme';
+import { ChatMainScreen } from './src/screens/ChatMainScreen';
+import { AnalyticsScreen } from './src/screens/AnalyticsScreen';
+import { SettingsScreen }  from './src/screens/SettingsScreen';
+import { colors, radius, spacing } from './src/theme';
 
-const Tab   = createBottomTabNavigator();
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
-// ─── Tab icons ─────────────────────────────────────────────────────────────────
-function TabIcon({ name, focused }: { name: string; focused: boolean }) {
-  const icons: Record<string, string> = {
-    Chat: '💬', Analytics: '📊', Settings: '⚙️',
-  };
+const TAB_CONFIG: Record<string, { icon: string; iconActive: string; label: string }> = {
+  Chat:      { icon: '🗨',  iconActive: '💬', label: 'Chat' },
+  Analytics: { icon: '📊',  iconActive: '📊', label: 'Insights' },
+  Settings:  { icon: '⚙️', iconActive: '⚙️', label: 'Settings' },
+};
+
+// ─── Custom glass tab bar ──────────────────────────────────────────────────────
+function GlassTabBar({ state, navigation }: any) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>{icons[name] ?? '•'}</Text>
+    <View style={[tabStyles.wrapper, { paddingBottom: insets.bottom || 12 }]}>
+      {Platform.OS !== 'web'
+        ? <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
+        : <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(15,15,24,0.96)' }]} />
+      }
+      <View style={tabStyles.border} />
+      <View style={tabStyles.inner}>
+        {state.routes.map((route: any, index: number) => {
+          const focused = state.index === index;
+          const config  = TAB_CONFIG[route.name] ?? { icon: '•', iconActive: '•', label: route.name };
+
+          const onPress = () => {
+            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+            if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
+          };
+
+          return (
+            <View key={route.key} style={tabStyles.tab}>
+              {focused && <View style={tabStyles.activePill} />}
+              <Text onPress={onPress} style={[tabStyles.icon, focused ? tabStyles.iconActive : tabStyles.iconInactive]}>
+                {focused ? config.iconActive : config.icon}
+              </Text>
+              <Text onPress={onPress} style={[tabStyles.label, focused ? tabStyles.labelActive : tabStyles.labelInactive]}>
+                {config.label}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+    </View>
   );
 }
 
-// ─── Chat stack (conversations → chat) ────────────────────────────────────────
-function ChatStack({ userId }: { userId: string }) {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Conversations"
-        options={{
-          title: 'Conversations',
-          headerStyle: { backgroundColor: colors.bgPrimary },
-          headerTintColor: colors.primary,
-        }}
-      >
-        {({ navigation }) => (
-          <ConversationsScreen
-            userId={userId}
-            onSelectConversation={(convId) =>
-              navigation.navigate('Chat' as never, { convId } as never)
-            }
-          />
-        )}
-      </Stack.Screen>
-      <Stack.Screen
-        name="Chat"
-        options={{
-          title: 'Support Chat',
-          headerStyle: { backgroundColor: colors.bgPrimary },
-          headerTintColor: colors.primary,
-        }}
-      >
-        {() => <ChatScreen userId={userId} />}
-      </Stack.Screen>
-    </Stack.Navigator>
-  );
-}
+const tabStyles = StyleSheet.create({
+  wrapper:      { position: 'absolute', bottom: 0, left: 0, right: 0, overflow: 'hidden' },
+  border:       { position: 'absolute', top: 0, left: 0, right: 0, height: 0.5, backgroundColor: 'rgba(255,255,255,0.15)' },
+  inner:        { flexDirection: 'row', paddingTop: 8, paddingHorizontal: spacing.md },
+  tab:          { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 4, position: 'relative' },
+  activePill:   {
+    position: 'absolute', top: -8, width: 40, height: 3, borderRadius: radius.full, backgroundColor: colors.primary,
+    ...Platform.select({
+      ios:     { shadowColor: colors.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.9, shadowRadius: 8 },
+      android: { elevation: 6 },
+      web:     { boxShadow: '0 0 10px 3px #6366f1' } as any,
+    }),
+  },
+  icon:         { fontSize: 24 },
+  iconActive:   { opacity: 1 },
+  iconInactive: { opacity: 0.55 },
+  label:        { fontSize: 11, fontWeight: '600', letterSpacing: 0.2 },
+  labelActive:  { color: colors.primary },
+  labelInactive:{ color: '#6e6e8a' },
+});
 
 // ─── Root ──────────────────────────────────────────────────────────────────────
 export default function App() {
@@ -80,45 +99,42 @@ export default function App() {
   if (!userId) return null;
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
-      <StatusBar style="dark" />
-      <NavigationContainer>
+      <StatusBar style="light" />
+      <NavigationContainer
+        theme={{
+          dark: true,
+          fonts: {
+            regular: { fontFamily: 'System', fontWeight: '400' },
+            medium:  { fontFamily: 'System', fontWeight: '500' },
+            bold:    { fontFamily: 'System', fontWeight: '700' },
+            heavy:   { fontFamily: 'System', fontWeight: '800' },
+          },
+          colors: {
+            primary:      colors.primary,
+            background:   colors.bgPrimary,
+            card:         colors.bgPrimary,
+            text:         colors.textPrimary,
+            border:       colors.border,
+            notification: colors.primary,
+          },
+        }}
+      >
         <Tab.Navigator
-          screenOptions={({ route }) => ({
-            headerShown: false,
-            tabBarIcon: ({ focused }) => <TabIcon name={route.name} focused={focused} />,
-            tabBarActiveTintColor:   colors.primary,
-            tabBarInactiveTintColor: colors.textTertiary,
-            tabBarStyle: {
-              backgroundColor: colors.bgPrimary,
-              borderTopColor:  colors.border,
-              borderTopWidth:  0.5,
-              paddingBottom:   4,
-              height:          56,
-            },
-            tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
-          })}
+          tabBar={(props) => <GlassTabBar {...props} />}
+          screenOptions={{ headerShown: false }}
         >
           <Tab.Screen name="Chat">
-            {() => <ChatStack userId={userId} />}
+            {() => <ChatMainScreen userId={userId} />}
           </Tab.Screen>
-
-          <Tab.Screen
-            name="Analytics"
-            component={AnalyticsScreen}
-            options={{ headerShown: false }}
-          />
-
+          <Tab.Screen name="Analytics" component={AnalyticsScreen} />
           <Tab.Screen name="Settings">
-            {() => (
-              <SettingsScreen
-                activeUserId={userId}
-                setActiveUserId={setUserId}
-              />
-            )}
+            {() => <SettingsScreen activeUserId={userId} setActiveUserId={setUserId} />}
           </Tab.Screen>
         </Tab.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

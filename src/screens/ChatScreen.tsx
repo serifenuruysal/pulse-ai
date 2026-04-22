@@ -206,7 +206,7 @@ const SUGGESTED = [
 ];
 
 // ─── Screen ────────────────────────────────────────────────────────────────────
-export function ChatScreen({ userId }: { userId: string }) {
+export function ChatScreen({ userId, initialMessage }: { userId: string; initialMessage?: string }) {
   const {
     messages, isTyping, isLoading, error,
     sendMessage, newConversation,
@@ -214,6 +214,14 @@ export function ChatScreen({ userId }: { userId: string }) {
 
   const [input, setInput] = useState('');
   const listRef = useRef<FlatList>(null);
+  const sentInitial = useRef(false);
+
+  useEffect(() => {
+    if (initialMessage && !sentInitial.current && !isLoading) {
+      sentInitial.current = true;
+      sendMessage(initialMessage);
+    }
+  }, [initialMessage, sendMessage]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -338,7 +346,7 @@ const styles = StyleSheet.create({
   headerStatus:     { fontSize: 12, color: colors.success, marginTop: 1 },
   newBtn:           { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.full, borderWidth: 0.5, borderColor: colors.border },
   newBtnText:       { fontSize: 12, color: colors.primary, fontWeight: '500' },
-  messageList:      { padding: spacing.md, paddingBottom: spacing.xl },
+  messageList:      { padding: spacing.md, paddingBottom: 100 },
   bubbleRow:        { flexDirection: 'row', marginBottom: spacing.md, alignItems: 'flex-end' },
   bubbleRowUser:    { justifyContent: 'flex-end' },
   bubbleRowAI:      { justifyContent: 'flex-start', gap: spacing.sm },
@@ -346,21 +354,21 @@ const styles = StyleSheet.create({
   avatarText:       { color: '#fff', fontSize: 10, fontWeight: '700' },
   bubble:           { borderRadius: radius.lg, paddingHorizontal: 14, paddingVertical: 10 },
   bubbleUser:       { backgroundColor: colors.userBubble, borderBottomRightRadius: 4 },
-  bubbleAI:         { backgroundColor: colors.aiBubble, borderBottomLeftRadius: 4 },
+  bubbleAI:         { backgroundColor: 'rgba(255,255,255,0.09)', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
   timestamp:        { fontSize: 11, color: colors.textTertiary, marginTop: 3, paddingHorizontal: 4 },
   emptyState:       { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
   emptyAvatar:      { width: 64, height: 64, borderRadius: 32, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.lg },
   emptyTitle:       { fontSize: 20, fontWeight: '600', color: colors.textPrimary, marginBottom: spacing.xs },
   emptySubtitle:    { fontSize: 14, color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.xl, lineHeight: 20 },
   suggestions:      { width: '100%', gap: spacing.sm },
-  suggBtn:          { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, backgroundColor: colors.bgSecondary, borderRadius: radius.md, borderWidth: 0.5, borderColor: colors.border },
+  suggBtn:          { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: radius.md, borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' },
   suggIcon:         { fontSize: 20 },
-  suggText:         { fontSize: 14, color: colors.textSecondary, flex: 1 },
+  suggText:         { fontSize: 14, color: '#a0a0b8', flex: 1 },
   errorBanner:      { margin: spacing.md, padding: spacing.sm, backgroundColor: '#fee2e2', borderRadius: radius.sm },
   errorText:        { fontSize: 13, color: '#991b1b', textAlign: 'center' },
-  inputRow:         { flexDirection: 'row', alignItems: 'flex-end', padding: spacing.md, borderTopWidth: 0.5, borderColor: colors.border, gap: spacing.sm, backgroundColor: colors.bgPrimary },
-  input:            { flex: 1, minHeight: 40, maxHeight: 120, backgroundColor: colors.bgSecondary, borderRadius: radius.xl, paddingHorizontal: 14, paddingVertical: 10, fontSize: 15, color: colors.textPrimary, borderWidth: 0.5, borderColor: colors.border },
-  sendBtn:          { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
-  sendBtnDisabled:  { opacity: 0.4 },
-  sendBtnIcon:      { color: '#fff', fontSize: 18, fontWeight: '700', marginTop: -1 },
+  inputRow:         { flexDirection: 'row', alignItems: 'flex-end', padding: spacing.md, paddingBottom: 80, borderTopWidth: 0.5, borderColor: 'rgba(255,255,255,0.10)', gap: spacing.sm, backgroundColor: '#1a1a26' },
+  input:            { flex: 1, minHeight: 40, maxHeight: 120, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: radius.xl, paddingHorizontal: 14, paddingVertical: 10, fontSize: 15, color: '#f0f0f5', borderWidth: 1, borderColor: 'rgba(255,255,255,0.14)' },
+  sendBtn:          { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
+  sendBtnDisabled:  { opacity: 0.35 },
+  sendBtnIcon:      { color: '#fff', fontSize: 20, fontWeight: '700', marginTop: -1 },
 });

@@ -1,39 +1,52 @@
 export const colors = {
+  // Brand
   primary:    '#6366f1',
-  primaryDim: '#ede9fe',
+  primaryDim: 'rgba(99,102,241,0.12)',
   secondary:  '#8b5cf6',
+  accent:     '#38bdf8',
 
-  bgPrimary:   '#ffffff',
-  bgSecondary: '#f5f5f7',
-  bgTertiary:  '#ebebed',
+  // Backgrounds — dark but not pitch black
+  bgPrimary:   '#0f0f18',
+  bgSecondary: '#16161f',
+  bgTertiary:  '#1e1e2a',
+  bgCard:      'rgba(255,255,255,0.05)',
 
-  textPrimary:   '#1d1d1f',
-  textSecondary: '#6e6e73',
-  textTertiary:  '#aeaeb2',
+  // Glass
+  glassBg:     'rgba(255,255,255,0.07)',
+  glassBorder: 'rgba(255,255,255,0.12)',
+  glassStrong: 'rgba(255,255,255,0.12)',
 
-  border:        '#e5e5ea',
-  borderLight:   '#f2f2f7',
+  // Text — bright enough to read clearly
+  textPrimary:   '#f0f0f5',
+  textSecondary: '#a0a0b8',
+  textTertiary:  '#60607a',
 
-  success: '#22c55e',
-  warning: '#f59e0b',
-  error:   '#ef4444',
-  info:    '#06b6d4',
+  // Borders
+  border:        'rgba(255,255,255,0.10)',
+  borderLight:   'rgba(255,255,255,0.06)',
 
+  // Status
+  success: '#34d399',
+  warning: '#fbbf24',
+  error:   '#f87171',
+  info:    '#38bdf8',
+
+  // Bubbles
   userBubble: '#6366f1',
-  aiBubble:   '#f5f5f7',
+  aiBubble:   'rgba(255,255,255,0.07)',
 };
 
 export const fonts = {
-  regular: undefined,  // system font
+  regular: undefined,
   medium:  undefined,
   bold:    undefined,
 };
 
 export const radius = {
   sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
+  md: 14,
+  lg: 20,
+  xl: 28,
   full: 999,
 };
 
